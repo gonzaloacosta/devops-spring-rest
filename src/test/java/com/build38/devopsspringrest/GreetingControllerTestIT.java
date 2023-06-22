@@ -17,6 +17,6 @@ public class GreetingControllerTestIT {
     @Test
     public void getHello() throws Exception {
         ResponseEntity<String> response = template.getForEntity("/greeting", String.class);
-        assertThat(response.getBody()).isEqualTo("{\"id\":1,\"content\":\"Hello, World!\"}");
+        assertThat(response.getBody()).isEqualTo("{\"id\":1,\"content\":\"Hello, Folks!\"}");
     }
 }
