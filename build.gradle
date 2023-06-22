@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.build38'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.2-SNAPSHOT'
 
 java {
 	sourceCompatibility = '17'
@@ -17,6 +17,8 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web:3.1.0'
+	implementation 'io.micrometer:micrometer-registry-prometheus:1.10.5'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator:3.1.0'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test:3.1.0'
 }
 
