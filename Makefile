@@ -1,11 +1,29 @@
-VERSION 	:= 0.0.2-SNAPSHOT
-NAME 		:= devops-sprint-rest
-
+export
+VERSION 		:= $(shell egrep '^version'  build.gradle | cut -d = -f 2 | sed "s/['|' ']//g")
+NAME 			:= $(shell basename `pwd`)
+ORGANIZATION	:= build38
+NEXUS_REGISTRY 	:= $(NEXUS_REGISTRY)
+IMAGE_TAG		:= $(NEXUS_REGISTRY)/$(ORGANIZATION)/$(NAME):$(VERSION)
+JAR_FILE		:= $(NAME)-$(VERSION).jar
+NEXUS_USER		:= $(NEXUS_USER)
+NEXUS_PASSWORD 	:= $(NEXUS_PASSWORD)
+export 
+# env
+env:
+	@echo "Organization: $(ORGANIZATION)"
+	@echo "Artifact: $(NAME)"
+	@echo "Version: $(VERSION)"
+	@echo "Registry: $(NEXUS_REGISTRY)"
+	@echo "Image Registry Tag: $(IMAGE_TAG)"
+	@echo "JAR file: $(JAR_FILE)"
 
 # gradle
 gradle/run:
-	@./gradlew
-	@./gradlew bootRun
+	@`pwd`/gradlew
+	@`pwd`/gradlew bootRun
+
+gradle/build:
+	@./gradlew build
 
 # docker
 docker/ps:
@@ -18,17 +36,16 @@ docker/install:
 	@brew install docker
 
 docker/build:
-	@sudo docker build --build-arg JAR_FILE=build/libs/*.jar -t build38/$(NAME):$(TAG) .
-
+	@docker build --build-arg JAR_FILE=build/libs/$(JAR_FILE) -t $(IMAGE_TAG) .
 
 docker/run:
-	@sudo docker run --name $(NAME) --rm -p 8080:8080 -d -it build38/$(NAME):$(TAG)
+	@docker run --name $(NAME)-$(VERSION) --rm -p 8080:8080 -d -it $(IMAGE_TAG)
 
 docker/login:
-	@sudo docker login
+	@$(shell docker login -u $(NEXUS_USER) -p $(NEXUS_PASSWORD) $(NEXUS_REGISTRY))
 
 docker/push:
-	@sudo docker push $(REGISTRY)/$(NAME):$(TAG)
+	@docker push $(IMAGE_TAG)
 
 
 # Minikube
@@ -60,5 +77,5 @@ kube/info:
 
 
 # Test
-#actuator/health:
-#    @curl "http://localhost:8081/actuator/health"
+health:
+	@curl -s http://localhost:8080/actuator/health
